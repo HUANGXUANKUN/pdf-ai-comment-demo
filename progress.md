@@ -25,3 +25,13 @@ TypeScript checking and production builds passed. Vite reports only a non-blocki
 The mobile toolbar was converted into an explicit 96px two-row layout and rechecked at 390×844. The final TypeScript check and production build both pass. The only build notice is Vite’s non-blocking large-chunk warning for the PDF.js runtime and worker.
 
 A clean source archive was created at `/home/ubuntu/pdf-ai-comment-demo-source.zip`, excluding dependencies, build output, Git metadata, and internal planning files. `unzip -t` reported no errors. The reusable project README documents interactions, architecture, normalized coordinates, integration with the existing `PdfPreviewer`, CORS constraints, and production AI/persistence follow-ups.
+
+## iOS Safari compatibility fix
+
+The reported mobile failure was reproduced from the runtime signature and traced to the PDF.js modern build. The implementation is being migrated to the official PDF.js legacy display and worker builds so older Safari receives the complete compatibility layer. Verification will include a synthetic missing-API test, TypeScript, production build, desktop browser rendering, and the deployed mobile layout.
+
+The complete compatibility regression now passes after adding the remaining `AbortSignal.any` shim. TypeScript and the production build both succeed. Browser verification confirms that the legacy display and worker pair render the sample PDF, create the TextLayer, and expose the full page on desktop. A 390×844 mobile screenshot also shows the PDF content rendered instead of the previous error state, with the responsive toolbar and status bar intact.
+
+Annotating mode was rechecked after the compatibility migration. Switching modes succeeds, the TextLayer still contains 163 measurable text items, and hovering the real title coordinates produces the blue title highlight plus “Click to comment”. Runtime inspection reports no page error, a 660×855 Canvas, and working `Promise.withResolvers`, `Promise.try`, and `AbortSignal.any` functions.
+
+The compatibility fix is finalized. Both PDF.js imports now use `pdfjs-dist/legacy/build/pdf.mjs`, and the worker uses the matching legacy worker. A focused `pdfjs-compat.ts` installs `AbortSignal.any` only when missing. `pnpm test:compat` is now part of the documented verification workflow, and the README explains why the legacy build is required for Safari/iOS Safari before 17.4.

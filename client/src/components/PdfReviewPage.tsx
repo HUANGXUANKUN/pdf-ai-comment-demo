@@ -1,10 +1,11 @@
 import { LoaderCircle, MessageSquarePlus, Sparkles, X } from "lucide-react";
+import "@/lib/pdfjs-compat";
 import {
   TextLayer,
   type PDFDocumentProxy,
   type PDFPageProxy,
   type PageViewport,
-} from "pdfjs-dist";
+} from "pdfjs-dist/legacy/build/pdf.mjs";
 import {
   useCallback,
   useEffect,

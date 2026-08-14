@@ -10,13 +10,14 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
+import "@/lib/pdfjs-compat";
 import {
   GlobalWorkerOptions,
   getDocument,
   type PDFDocumentLoadingTask,
   type PDFDocumentProxy,
-} from "pdfjs-dist";
-import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+} from "pdfjs-dist/legacy/build/pdf.mjs";
+import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.min.mjs?url";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PdfReviewPage } from "./PdfReviewPage";
 import type { PdfAnnotation, ViewerMode } from "@/types/pdf-review";

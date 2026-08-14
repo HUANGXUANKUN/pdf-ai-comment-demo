@@ -21,3 +21,11 @@ Use `pdfjs-dist` to render each page to Canvas and to create a DOM text layer. U
 Persist annotations in normalized page coordinates. Render rectangle and point annotations in a transparent overlay. Text annotations are saved as normalized rectangles derived from `Range.getClientRects()`. This permits zooming without losing anchors.
 
 Use the official Mozilla PDF.js sample PDF for initial content, while allowing the user to upload a local PDF for testing.
+
+## 2026-08-14 — iOS Safari rendering regression
+
+The user-provided iPhone screenshot shows the document loading and the `PdfReviewPage` error boundary reporting `undefined is not a function (near '...a of e...')`. The failure occurs after the `PDFDocumentProxy` is available but while the page/TextLayer path is running.
+
+The installed `pdfjs-dist@6.2.108` modern display build contains 27 direct `Promise.withResolvers` calls, including the `TextLayer` capability initialization. `Promise.withResolvers()` is a Baseline 2024 API and is missing from Safari/iOS Safari before 17.4. This precisely matches the device-only failure: desktop Chromium succeeds, while the older iPhone runtime throws when `new TextLayer()` initializes.
+
+PDF.js officially distributes separate modern-browser and older-browser builds. The package's `legacy/build/pdf.mjs` includes core-js implementations for `Promise.withResolvers` and `Promise.try`; matching `legacy/build/pdf.worker.min.mjs` is also present. The durable fix is to use the legacy display and worker pair together rather than adding a single hand-written global polyfill, because PDF.js 6 also depends on other recent APIs such as `Promise.try` and `AbortSignal.any`.

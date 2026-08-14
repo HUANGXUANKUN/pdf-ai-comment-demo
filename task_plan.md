@@ -21,6 +21,7 @@ Build a polished React + TypeScript + PDF.js web app that reproduces the uploade
 | Visual polish | Complete | Toolbar, paper canvas, pins, comment composer, zoom, responsive behavior match the reference |
 | Verification | Complete | TypeScript check, production build, and browser interaction tests pass |
 | Delivery | Complete | Source bundle and concise run/integration notes delivered |
+| iOS Safari compatibility regression | Complete | Synthetic old-Safari test, TypeScript, production build, mobile render, runtime inspection, and Annotating Hover regression all pass |
 
 ## Errors Encountered
 
@@ -28,6 +29,8 @@ Build a polished React + TypeScript + PDF.js web app that reproduces the uploade
 |---|---:|---|
 | Target repository/file not visible in the sandbox/GitHub integration | 1 | User uploaded the source file directly; architecture was analyzed from the attachment |
 | Text Hover stopped working after switching from Ask to Annotating mode | 1 | The mode effect was clearing the cached text hit index; preserved it across mode changes and reverified in the browser |
+| iOS Safari page render failed with `undefined is not a function` | 1 | Root cause isolated to the PDF.js modern build calling unsupported `Promise.withResolvers`; switching display layer and worker to the official legacy build |
+| Synthetic old-Safari test showed the legacy display still expects `AbortSignal.any` | 1 | Added a small standards-compatible `AbortSignal.any` polyfill that runs before the legacy display import; expanded the regression test to verify abort forwarding |
 
 ## Constraints
 

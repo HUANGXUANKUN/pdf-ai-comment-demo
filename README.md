@@ -26,11 +26,16 @@ pnpm dev
 Production verification commands are:
 
 ```bash
+pnpm test:compat
 pnpm check
 pnpm build
 ```
 
-Both commands pass in the delivered version.
+All three commands pass in the delivered version. `test:compat` removes the recent Promise and AbortSignal APIs from the test runtime before loading PDF.js, which guards the older-iOS Safari path that originally failed during TextLayer initialization.
+
+## Browser compatibility
+
+The viewer uses the official PDF.js legacy display and worker builds. This is intentional: recent PDF.js modern builds call `Promise.withResolvers()`, which is unavailable in Safari and iOS Safari before 17.4. The legacy build installs the required Promise compatibility methods, while `client/src/lib/pdfjs-compat.ts` supplies the remaining `AbortSignal.any()` behavior before PDF.js is evaluated.
 
 ## Important files
 
@@ -38,6 +43,7 @@ Both commands pass in the delivered version.
 |---|---|
 | `client/src/components/PdfReviewWorkspace.tsx` | PDF loading, worker setup, toolbar, upload, page/zoom/mode state, and persisted comments |
 | `client/src/components/PdfReviewPage.tsx` | Canvas rendering, PDF.js TextLayer, selection geometry, text hit-testing, point/area/text anchors, composers, pins, and comment cards |
+| `client/src/lib/pdfjs-compat.ts` | Minimal `AbortSignal.any()` fallback required by the PDF.js legacy display build on older Safari |
 | `client/src/types/pdf-review.ts` | Normalized coordinate and annotation types |
 | `client/src/index.css` | Complete Codex/editor-inspired visual system and responsive behavior |
 | `client/src/pages/Home.tsx` | Demo entry page |
